@@ -18,18 +18,29 @@ const mongoose_1 = require("@nestjs/mongoose");
 const team_member_schema_1 = require("../entities/team-member.schema");
 const mongoose_2 = require("mongoose");
 let TeamMemberService = class TeamMemberService {
-    memberModel;
-    constructor(memberModel) {
-        this.memberModel = memberModel;
+    teamMemberModel;
+    constructor(teamMemberModel) {
+        this.teamMemberModel = teamMemberModel;
     }
-    async join(teamId, userId, role) {
-        const exists = await this.memberModel.findOne({ teamId, userId });
-        if (exists)
-            throw new common_1.ConflictException('Already a member');
-        return this.memberModel.create({ teamId, userId, role });
+    async joinTeam(userId, teamId) {
+        const existing = await this.teamMemberModel.findOne({ userId, teamId });
+        if (existing)
+            throw new common_1.ConflictException('User already joined this team');
+        return this.teamMemberModel.create({
+            userId,
+            teamId,
+            role: 'Member',
+        });
     }
-    async findByUser(userId) {
-        return this.memberModel.find({ userId });
+    async getUserTeams(userId) {
+        return this.teamMemberModel.find({ userId });
+    }
+    async getUserRoleInTeam(userId, teamId) {
+        const member = await this.teamMemberModel.findOne({ userId, teamId });
+        if (!member) {
+            throw new Error('User is not a member of the team');
+        }
+        return member.role;
     }
 };
 exports.TeamMemberService = TeamMemberService;

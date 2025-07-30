@@ -1,41 +1,42 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Team } from '../entities/team.schema';
+import { Team, TeamDocument } from '../entities/team.schema';
 import { Model } from 'mongoose';
-import { TeamMember } from '../../team-members/entities/team-member.schema';
+import { TeamMember, TeamMemberDocument } from '../../team-members/entities/team-member.schema';
 
 @Injectable()
 export class TeamService {
   constructor(
-    @InjectModel(Team.name) private teamModel: Model<Team>,
-    @InjectModel(TeamMember.name) private teamMemberModel: Model<TeamMember>,
+    @InjectModel(Team.name) private teamModel: Model<TeamDocument>,
+    @InjectModel(TeamMember.name) private teamMemberModel: Model<TeamMemberDocument>,
   ) {}
 
-  async create(name: string, userId: string) {
-    // Only allow hardcoded Owner to create team
-    const ownerId = '6881f88f559b4c3e91663c58';
-    if (userId !== ownerId) throw new ForbiddenException('Only the owner can create a team');
+  async createTeam(name: string, userId: string): Promise<Team> {
+    const team = await this.teamModel.create({ name, ownerId: userId });
 
-    const newTeam = await this.teamModel.create({ name, ownerId });
     await this.teamMemberModel.create({
-      teamId: newTeam._id,
       userId,
+      teamId: team._id,
       role: 'Owner',
     });
-    return newTeam;
+
+    return team;
   }
 
-  async findAll() {
+  async getAllTeams(): Promise<Team[]> {
     return this.teamModel.find();
   }
 
-  async delete(teamId: string, userId: string) {
-    const member = await this.teamMemberModel.findOne({ teamId, userId });
+  async deleteTeam(teamId: string, userId: string): Promise<void> {
+    const team = await this.teamModel.findById(teamId);
+    if (!team) throw new NotFoundException('Team not found');
+
+    const member = await this.teamMemberModel.findOne({ userId, teamId });
     if (!member || (member.role !== 'Owner' && member.role !== 'Admin')) {
       throw new ForbiddenException('Only Owner or Admin can delete the team');
     }
-    await this.teamModel.deleteOne({ _id: teamId });
-    await this.teamMemberModel.deleteMany({ teamId });
-    return { message: 'Team deleted' };
+
+    await this.teamModel.findByIdAndDelete(teamId);
+    await this.teamMemberModel.deleteMany({ teamId }); // clean up members
   }
 }

@@ -25,29 +25,28 @@ let TeamService = class TeamService {
         this.teamModel = teamModel;
         this.teamMemberModel = teamMemberModel;
     }
-    async create(name, userId) {
-        const ownerId = '6881f88f559b4c3e91663c58';
-        if (userId !== ownerId)
-            throw new common_1.ForbiddenException('Only the owner can create a team');
-        const newTeam = await this.teamModel.create({ name, ownerId });
+    async createTeam(name, userId) {
+        const team = await this.teamModel.create({ name, ownerId: userId });
         await this.teamMemberModel.create({
-            teamId: newTeam._id,
             userId,
+            teamId: team._id,
             role: 'Owner',
         });
-        return newTeam;
+        return team;
     }
-    async findAll() {
+    async getAllTeams() {
         return this.teamModel.find();
     }
-    async delete(teamId, userId) {
-        const member = await this.teamMemberModel.findOne({ teamId, userId });
+    async deleteTeam(teamId, userId) {
+        const team = await this.teamModel.findById(teamId);
+        if (!team)
+            throw new common_1.NotFoundException('Team not found');
+        const member = await this.teamMemberModel.findOne({ userId, teamId });
         if (!member || (member.role !== 'Owner' && member.role !== 'Admin')) {
             throw new common_1.ForbiddenException('Only Owner or Admin can delete the team');
         }
-        await this.teamModel.deleteOne({ _id: teamId });
+        await this.teamModel.findByIdAndDelete(teamId);
         await this.teamMemberModel.deleteMany({ teamId });
-        return { message: 'Team deleted' };
     }
 };
 exports.TeamService = TeamService;

@@ -20,14 +20,15 @@ let TeamMemberController = class TeamMemberController {
     constructor(teamMemberService) {
         this.teamMemberService = teamMemberService;
     }
-    join(body) {
-        return this.teamMemberService.join(body.teamId, body.userId, 'Member');
+    async joinTeam(body) {
+        return this.teamMemberService.joinTeam(body.userId, body.teamId);
     }
-    createOwner(body) {
-        return this.teamMemberService.join(body.teamId, body.userId, 'Owner');
+    async getUserTeams(userId) {
+        return this.teamMemberService.getUserTeams(userId);
     }
-    getUserTeams(userId) {
-        return this.teamMemberService.findByUser(userId);
+    async getUserRole(userId, teamId) {
+        const role = await this.teamMemberService.getUserRoleInTeam(userId, teamId);
+        return { role };
     }
 };
 exports.TeamMemberController = TeamMemberController;
@@ -36,22 +37,23 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TeamMemberController.prototype, "join", null);
-__decorate([
-    (0, common_1.Post)('owner'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TeamMemberController.prototype, "createOwner", null);
+    __metadata("design:returntype", Promise)
+], TeamMemberController.prototype, "joinTeam", null);
 __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TeamMemberController.prototype, "getUserTeams", null);
+__decorate([
+    (0, common_1.Get)('role'),
+    __param(0, (0, common_1.Query)('userId')),
+    __param(1, (0, common_1.Query)('teamId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], TeamMemberController.prototype, "getUserRole", null);
 exports.TeamMemberController = TeamMemberController = __decorate([
     (0, common_1.Controller)('team-members'),
     __metadata("design:paramtypes", [team_member_service_1.TeamMemberService])

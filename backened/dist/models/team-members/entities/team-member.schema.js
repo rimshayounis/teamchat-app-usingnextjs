@@ -11,31 +11,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamMemberSchema = exports.TeamMember = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-let TeamMember = class TeamMember extends mongoose_2.Document {
-    teamId;
+let TeamMember = class TeamMember {
     userId;
+    teamId;
     role;
 };
 exports.TeamMember = TeamMember;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], TeamMember.prototype, "teamId", void 0);
+], TeamMember.prototype, "userId", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], TeamMember.prototype, "userId", void 0);
+], TeamMember.prototype, "teamId", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({
-        required: true,
-        enum: ['Owner', 'Admin', 'Member'],
-        default: 'Member',
-    }),
+    (0, mongoose_1.Prop)({ required: true, enum: ['Owner', 'Admin', 'Member'], default: 'Member' }),
     __metadata("design:type", String)
 ], TeamMember.prototype, "role", void 0);
 exports.TeamMember = TeamMember = __decorate([
-    (0, mongoose_1.Schema)({ timestamps: true })
+    (0, mongoose_1.Schema)()
 ], TeamMember);
 exports.TeamMemberSchema = mongoose_1.SchemaFactory.createForClass(TeamMember);
 //# sourceMappingURL=team-member.schema.js.map

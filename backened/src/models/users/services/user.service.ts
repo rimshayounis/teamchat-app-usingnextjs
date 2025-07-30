@@ -10,12 +10,11 @@ export class UserService {
   ) {}
 
   async register(username: string, email: string, password: string) {
-    // ✅ Validate password is a string
+  
     if (typeof password !== 'string') {
       throw new BadRequestException('Password must be a string');
     }
 
-    // ✅ Validate password length
     if (password.length < 7) {
       throw new BadRequestException('Password must be at least 7 characters long');
     }

@@ -2,25 +2,12 @@ import { TeamMemberService } from '../services/team-member.service';
 export declare class TeamMemberController {
     private readonly teamMemberService;
     constructor(teamMemberService: TeamMemberService);
-    join(body: {
-        teamId: string;
+    joinTeam(body: {
         userId: string;
-    }): Promise<import("mongoose").Document<unknown, {}, import("../entities/team-member.schema").TeamMember, {}> & import("../entities/team-member.schema").TeamMember & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    createOwner(body: {
         teamId: string;
-        userId: string;
-    }): Promise<import("mongoose").Document<unknown, {}, import("../entities/team-member.schema").TeamMember, {}> & import("../entities/team-member.schema").TeamMember & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
+    }): Promise<import("../entities/team-member.schema").TeamMember>;
+    getUserTeams(userId: string): Promise<import("../entities/team-member.schema").TeamMember[]>;
+    getUserRole(userId: string, teamId: string): Promise<{
+        role: string;
     }>;
-    getUserTeams(userId: string): Promise<(import("mongoose").Document<unknown, {}, import("../entities/team-member.schema").TeamMember, {}> & import("../entities/team-member.schema").TeamMember & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    })[]>;
 }

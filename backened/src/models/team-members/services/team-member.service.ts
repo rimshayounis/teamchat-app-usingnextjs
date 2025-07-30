@@ -1,26 +1,43 @@
 
-
-// src/team-member/team-member.service.ts
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { TeamMember } from '../entities/team-member.schema';
+import { TeamMember, TeamMemberDocument } from '../entities/team-member.schema';
 import { Model } from 'mongoose';
 
 @Injectable()
 export class TeamMemberService {
   constructor(
-    @InjectModel(TeamMember.name) private memberModel: Model<TeamMember>,
+    @InjectModel(TeamMember.name) private teamMemberModel: Model<TeamMemberDocument>,
   ) {}
 
-  async join(teamId: string, userId: string, role: 'Owner' | 'Admin' | 'Member') {
-    const exists = await this.memberModel.findOne({ teamId, userId });
-    if (exists) throw new ConflictException('Already a member');
+  async joinTeam(userId: string, teamId: string): Promise<TeamMember> {
+    const existing = await this.teamMemberModel.findOne({ userId, teamId });
+    if (existing) throw new ConflictException('User already joined this team');
 
-    return this.memberModel.create({ teamId, userId, role });
+    return this.teamMemberModel.create({
+      userId,
+      teamId,
+      role: 'Member',
+    });
   }
 
-  async findByUser(userId: string) {
-    return this.memberModel.find({ userId });
+  async getUserTeams(userId: string): Promise<TeamMember[]> {
+    return this.teamMemberModel.find({ userId });
   }
+
+  async getUserRoleInTeam(userId: string, teamId: string): Promise<string> {
+  const member = await this.teamMemberModel.findOne({ userId,  teamId });
+
+  if (!member) {
+    throw new Error('User is not a member of the team');
+  }
+
+  return member.role;
 }
+
+}
+
+
+
+
 

@@ -1,15 +1,16 @@
 import { Document } from 'mongoose';
-export declare class TeamMember extends Document {
-    teamId: string;
+export type TeamMemberDocument = TeamMember & Document;
+export declare class TeamMember {
     userId: string;
-    role: 'Owner' | 'Admin' | 'Member';
+    teamId: string;
+    role: string;
 }
-export declare const TeamMemberSchema: import("mongoose").Schema<TeamMember, import("mongoose").Model<TeamMember, any, any, any, Document<unknown, any, TeamMember, any> & TeamMember & Required<{
-    _id: unknown;
-}> & {
+export declare const TeamMemberSchema: import("mongoose").Schema<TeamMember, import("mongoose").Model<TeamMember, any, any, any, Document<unknown, any, TeamMember, any> & TeamMember & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
     __v: number;
-}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, TeamMember, Document<unknown, {}, import("mongoose").FlatRecord<TeamMember>, {}> & import("mongoose").FlatRecord<TeamMember> & Required<{
-    _id: unknown;
-}> & {
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, TeamMember, Document<unknown, {}, import("mongoose").FlatRecord<TeamMember>, {}> & import("mongoose").FlatRecord<TeamMember> & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
     __v: number;
 }>;

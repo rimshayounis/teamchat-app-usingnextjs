@@ -17,7 +17,7 @@ export class ChannelController {
     return this.service.create(dto.name, dto.teamId);
   }
 
-  @Get(':teamId')
+  @Get('teams/:teamId')
   async getChannels(@Param('teamId') teamId: string) {
     return this.service.findByTeam(teamId);
   }

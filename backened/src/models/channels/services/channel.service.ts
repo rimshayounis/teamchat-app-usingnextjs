@@ -10,7 +10,6 @@ export class ChannelService {
     private model: Model<ChannelDocument>,
   ) {}
 
-  // Create a new channel
   async create(name: string, teamId: string) {
     return this.model.create({
       name,
@@ -18,15 +17,13 @@ export class ChannelService {
     });
   }
 
-  // Get channels for a specific team
   async findByTeam(teamId: string) {
     return this.model
       .find({ teamId: new Types.ObjectId(teamId) })
-      .populate('teamId', 'name') // ✅ this makes populate work correctly
+      .populate('teamId', 'name')
       .exec();
   }
 
-  // Delete a channel
   async deleteChannel(channelId: string) {
     return this.model.deleteOne({ _id: new Types.ObjectId(channelId) });
   }

@@ -20,14 +20,15 @@ let TeamController = class TeamController {
     constructor(teamService) {
         this.teamService = teamService;
     }
-    create(body) {
-        return this.teamService.create(body.name, body.userId);
+    async createTeam(body) {
+        return this.teamService.createTeam(body.name, body.userId);
     }
-    findAll() {
-        return this.teamService.findAll();
+    async getAllTeams() {
+        return this.teamService.getAllTeams();
     }
-    delete(id, body) {
-        return this.teamService.delete(id, body.userId);
+    async deleteTeam(teamId, body) {
+        await this.teamService.deleteTeam(teamId, body.userId);
+        return { message: 'Team deleted' };
     }
 };
 exports.TeamController = TeamController;
@@ -36,22 +37,22 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TeamController.prototype, "create", null);
+    __metadata("design:returntype", Promise)
+], TeamController.prototype, "createTeam", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], TeamController.prototype, "findAll", null);
+    __metadata("design:returntype", Promise)
+], TeamController.prototype, "getAllTeams", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
-], TeamController.prototype, "delete", null);
+    __metadata("design:returntype", Promise)
+], TeamController.prototype, "deleteTeam", null);
 exports.TeamController = TeamController = __decorate([
     (0, common_1.Controller)('teams'),
     __metadata("design:paramtypes", [team_service_1.TeamService])

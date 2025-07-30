@@ -1,8 +1,15 @@
+
+
+
+
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
-export class Team extends Document {
+export type TeamDocument = Team & Document;
+
+@Schema()
+export class Team {
   @Prop({ required: true })
   name: string;
 
@@ -10,4 +17,8 @@ export class Team extends Document {
   ownerId: string;
 }
 
+  
+
 export const TeamSchema = SchemaFactory.createForClass(Team);
+
+

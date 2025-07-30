@@ -1,16 +1,9 @@
-import { TeamMember } from '../entities/team-member.schema';
+import { TeamMember, TeamMemberDocument } from '../entities/team-member.schema';
 import { Model } from 'mongoose';
 export declare class TeamMemberService {
-    private memberModel;
-    constructor(memberModel: Model<TeamMember>);
-    join(teamId: string, userId: string, role: 'Owner' | 'Admin' | 'Member'): Promise<import("mongoose").Document<unknown, {}, TeamMember, {}> & TeamMember & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    findByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, TeamMember, {}> & TeamMember & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    })[]>;
+    private teamMemberModel;
+    constructor(teamMemberModel: Model<TeamMemberDocument>);
+    joinTeam(userId: string, teamId: string): Promise<TeamMember>;
+    getUserTeams(userId: string): Promise<TeamMember[]>;
+    getUserRoleInTeam(userId: string, teamId: string): Promise<string>;
 }

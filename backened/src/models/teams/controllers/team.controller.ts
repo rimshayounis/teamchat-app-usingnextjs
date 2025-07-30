@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
+ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { TeamService } from '../services/team.service';
 
 @Controller('teams')
@@ -6,17 +6,21 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@Body() body: { name: string; userId: string }) {
-    return this.teamService.create(body.name, body.userId);
+  async createTeam(@Body() body: { name: string; userId: string }) {
+    return this.teamService.createTeam(body.name, body.userId);
   }
 
   @Get()
-  findAll() {
-    return this.teamService.findAll();
+  async getAllTeams() {
+    return this.teamService.getAllTeams();
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @Body() body: { userId: string }) {
-    return this.teamService.delete(id, body.userId);
+  async deleteTeam(
+    @Param('id') teamId: string,
+    @Body() body: { userId: string },
+  ) {
+    await this.teamService.deleteTeam(teamId, body.userId);
+    return { message: 'Team deleted' };
   }
 }
