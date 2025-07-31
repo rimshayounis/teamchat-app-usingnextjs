@@ -11,6 +11,7 @@ export declare class UserService {
             __v: number;
         };
     }>;
+    findByEmail(email: string): Promise<User | null>;
     login(email: string, password: string): Promise<{
         message: string;
         user: import("mongoose").Document<unknown, {}, UserDocument, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{

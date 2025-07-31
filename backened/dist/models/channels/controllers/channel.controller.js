@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':teamId'),
+    (0, common_1.Get)('teams/:teamId'),
     __param(0, (0, common_1.Param)('teamId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

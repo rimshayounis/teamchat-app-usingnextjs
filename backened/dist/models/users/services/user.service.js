@@ -23,9 +23,6 @@ let UserService = class UserService {
         this.userModel = userModel;
     }
     async register(username, email, password) {
-        if (typeof password !== 'string') {
-            throw new common_1.BadRequestException('Password must be a string');
-        }
         if (password.length < 7) {
             throw new common_1.BadRequestException('Password must be at least 7 characters long');
         }
@@ -36,6 +33,9 @@ let UserService = class UserService {
         const user = new this.userModel({ username, email, password });
         await user.save();
         return { message: 'User registered successfully', user };
+    }
+    async findByEmail(email) {
+        return this.userModel.findOne({ email });
     }
     async login(email, password) {
         const user = await this.userModel.findOne({ email });

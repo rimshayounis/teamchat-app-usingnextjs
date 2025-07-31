@@ -10,10 +10,8 @@ export class UserService {
   ) {}
 
   async register(username: string, email: string, password: string) {
-  
-    if (typeof password !== 'string') {
-      throw new BadRequestException('Password must be a string');
-    }
+    
+    
 
     if (password.length < 7) {
       throw new BadRequestException('Password must be at least 7 characters long');
@@ -28,6 +26,10 @@ export class UserService {
     await user.save();
     return { message: 'User registered successfully', user };
   }
+  async findByEmail(email: string): Promise<User | null> {
+  return this.userModel.findOne({ email });
+}
+
 
   async login(email: string, password: string) {
     const user = await this.userModel.findOne({ email });
