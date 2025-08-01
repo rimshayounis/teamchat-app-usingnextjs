@@ -20,40 +20,18 @@ let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
     }
-    async register(body) {
-        const { username, email, password } = body;
-        return this.userService.register(username, email, password);
-    }
-    async login(body) {
-        const { email, password } = body;
-        return this.userService.login(email, password);
-    }
-    findOne(id) {
+    async getUser(id) {
         return this.userService.getUserById(id);
     }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.Post)('register'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "register", null);
-__decorate([
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "login", null);
-__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "findOne", null);
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService])

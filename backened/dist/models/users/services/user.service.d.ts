@@ -3,23 +3,16 @@ import { User, UserDocument } from '../entities/user.schema';
 export declare class UserService {
     private userModel;
     constructor(userModel: Model<UserDocument>);
-    register(username: string, email: string, password: string): Promise<{
-        message: string;
-        user: import("mongoose").Document<unknown, {}, UserDocument, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
-            _id: unknown;
-        }> & {
-            __v: number;
-        };
+    createUser(data: {
+        username: string;
+        email: string;
+        password: string;
+    }): Promise<import("mongoose").Document<unknown, {}, UserDocument, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
     }>;
-    findByEmail(email: string): Promise<User | null>;
-    login(email: string, password: string): Promise<{
-        message: string;
-        user: import("mongoose").Document<unknown, {}, UserDocument, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
-            _id: unknown;
-        }> & {
-            __v: number;
-        };
-    }>;
+    findByEmail(email: string): Promise<UserDocument | null>;
     getUserById(id: string): Promise<(import("mongoose").Document<unknown, {}, UserDocument, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {

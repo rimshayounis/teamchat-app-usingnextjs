@@ -1,19 +1,29 @@
 
-//main.ts 
+
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
+import { CsrfMiddleware } from './auth/csrf.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Enable CORS so frontend (like Expo app) can access backend
-  app.enableCors();
+  app.use(cookieParser());
 
-  // ✅ Listen on all interfaces, so your phone on same WiFi can access it
-  const port = process.env.PORT ?? 4000;
-  await app.listen(port, '0.0.0.0');
+  // ✅ Fix: Bind `this` correctly
+  const csrf = new CsrfMiddleware();
+  app.use(csrf.use.bind(csrf));
 
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  });
+
+
+
+  await app.listen(3000);
+  console.log("API is running");
 }
 bootstrap();
+

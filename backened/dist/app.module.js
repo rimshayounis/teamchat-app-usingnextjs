@@ -15,8 +15,15 @@ const team_module_1 = require("./models/teams/team.module");
 const team_member_module_1 = require("./models/team-members/team-member.module");
 const channel_module_1 = require("./models/channels/channel.module");
 const message_module_1 = require("./models/messages/message.module");
+const auth_middleware_1 = require("./auth/auth.middleware");
 const message_gateway_1 = require("./models/messages/message.gateway");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer
+            .apply(auth_middleware_1.AuthMiddleware)
+            .forRoutes({ path: 'teams/*', method: common_1.RequestMethod.ALL }, { path: 'channels/*', method: common_1.RequestMethod.ALL }, { path: 'messages/*', method: common_1.RequestMethod.ALL });
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
@@ -29,6 +36,7 @@ exports.AppModule = AppModule = __decorate([
             team_member_module_1.TeamMemberModule,
             channel_module_1.ChannelModule,
             message_module_1.MessageModule,
+            auth_module_1.AuthModule,
         ],
         providers: [message_gateway_1.MessageGateway],
     })
