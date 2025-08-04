@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamMemberController = void 0;
 const common_1 = require("@nestjs/common");
 const team_member_service_1 = require("../services/team-member.service");
+const jwt_auth_guard_1 = require("../../../auth/jwt-auth.guard");
 let TeamMemberController = class TeamMemberController {
     teamMemberService;
     constructor(teamMemberService) {
@@ -55,6 +56,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TeamMemberController.prototype, "getUserRole", null);
 exports.TeamMemberController = TeamMemberController = __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('team-members'),
     __metadata("design:paramtypes", [team_member_service_1.TeamMemberService])
 ], TeamMemberController);

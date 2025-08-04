@@ -19,12 +19,15 @@ const bcrypt = require("bcrypt");
 const mongoose_1 = require("@nestjs/mongoose");
 const user_schema_1 = require("../models/users/entities/user.schema");
 const mongoose_2 = require("mongoose");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
     userModel;
     jwtService;
-    constructor(userModel, jwtService) {
+    configService;
+    constructor(userModel, jwtService, configService) {
         this.userModel = userModel;
         this.jwtService = jwtService;
+        this.configService = configService;
     }
     async validateUser(email, password) {
         const user = await this.userModel.findOne({ email });
@@ -38,11 +41,11 @@ let AuthService = class AuthService {
     async login(user) {
         const payload = { userId: user._id, email: user.email };
         const accessToken = this.jwtService.sign(payload, {
-            secret: process.env.JWT_ACCESS_SECRET,
-            expiresIn: '15m',
+            secret: this.configService.get('JWT_ACCESS_SECRET'),
+            expiresIn: '1h',
         });
         const refreshToken = this.jwtService.sign(payload, {
-            secret: process.env.JWT_REFRESH_SECRET,
+            secret: this.configService.get('JWT_REFRESH_SECRET'),
             expiresIn: '7d',
         });
         return {
@@ -53,10 +56,10 @@ let AuthService = class AuthService {
     async refreshAccessToken(refreshToken) {
         try {
             const payload = await this.jwtService.verifyAsync(refreshToken, {
-                secret: process.env.JWT_REFRESH_SECRET,
+                secret: this.configService.get('JWT_REFRESH_SECRET'),
             });
             const newAccessToken = this.jwtService.sign({ userId: payload.userId, email: payload.email }, {
-                secret: process.env.JWT_ACCESS_SECRET,
+                secret: this.configService.get('JWT_ACCESS_SECRET'),
                 expiresIn: '15m',
             });
             return newAccessToken;
@@ -96,6 +99,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

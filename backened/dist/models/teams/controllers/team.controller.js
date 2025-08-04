@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamController = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_auth_guard_1 = require("../../../auth/jwt-auth.guard");
 const team_service_1 = require("../services/team.service");
 let TeamController = class TeamController {
     teamService;
@@ -23,7 +24,8 @@ let TeamController = class TeamController {
     async createTeam(body) {
         return this.teamService.createTeam(body.name, body.userId);
     }
-    async getAllTeams() {
+    async getAllTeams(req) {
+        console.log('Authenticated user:', req.user);
         return this.teamService.getAllTeams();
     }
     async deleteTeam(teamId, body) {
@@ -41,8 +43,9 @@ __decorate([
 ], TeamController.prototype, "createTeam", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], TeamController.prototype, "getAllTeams", null);
 __decorate([
@@ -55,6 +58,7 @@ __decorate([
 ], TeamController.prototype, "deleteTeam", null);
 exports.TeamController = TeamController = __decorate([
     (0, common_1.Controller)('teams'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [team_service_1.TeamService])
 ], TeamController);
 //# sourceMappingURL=team.controller.js.map

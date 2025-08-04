@@ -13,12 +13,14 @@ const team_controller_1 = require("./controllers/team.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const team_schema_1 = require("./entities/team.schema");
 const team_member_schema_1 = require("../team-members/entities/team-member.schema");
+const auth_module_1 = require("../../auth/auth.module");
 let TeamModule = class TeamModule {
 };
 exports.TeamModule = TeamModule;
 exports.TeamModule = TeamModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forFeature([{ name: team_schema_1.Team.name, schema: team_schema_1.TeamSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: team_member_schema_1.TeamMember.name, schema: team_member_schema_1.TeamMemberSchema }]),
         ],

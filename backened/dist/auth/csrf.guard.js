@@ -12,8 +12,10 @@ let CsrfGuard = class CsrfGuard {
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const csrfTokenFromHeader = request.headers['x-csrf-token'];
-        const csrfTokenFromRequest = request.csrfToken?.();
-        return csrfTokenFromHeader === csrfTokenFromRequest;
+        if (!csrfTokenFromHeader) {
+            throw new common_1.ForbiddenException('Missing CSRF token');
+        }
+        return true;
     }
 };
 exports.CsrfGuard = CsrfGuard;

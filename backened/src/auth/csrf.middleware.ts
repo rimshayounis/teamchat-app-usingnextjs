@@ -3,29 +3,38 @@
 
 
 
-import * as csurf from 'csurf';
-import { Injectable, NestMiddleware } from '@nestjs/common';
+
+
+import * as csrf from 'csurf';
 import { Request, Response, NextFunction } from 'express';
 
-@Injectable()
-export class CsrfMiddleware implements NestMiddleware {
-  private readonly csrfProtection;
+export class CsrfMiddleware {
+  private csrfProtection;
 
   constructor() {
-    this.csrfProtection = csurf({
-      cookie: true, 
+    this.csrfProtection = csrf({
+      cookie: {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: false, // ✅ Set to true if you're using HTTPS in production
+      },
     });
   }
 
   use(req: Request, res: Response, next: NextFunction) {
-    this.csrfProtection(req, res, (err: any) => {
+    this.csrfProtection(req, res, (err) => {
       if (err) {
-        return res.status(403).json({ message: 'Invalid or missing CSRF token' });
+        return next(err); // ✅ Properly forward CSRF errors
       }
 
-      res.locals.csrfToken = req.csrfToken();
+      try {
+        // ✅ Always generate and expose token for use in /auth/csrf-token
+        res.locals.csrfToken = req.csrfToken();
+      } catch (e) {
+        console.error('Failed to generate CSRF token:', e.message);
+      }
+
       next();
     });
   }
 }
-

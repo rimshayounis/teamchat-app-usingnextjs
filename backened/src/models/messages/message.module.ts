@@ -7,9 +7,12 @@ import { Message, MessageSchema } from './entities/message.schema';
 import { MessageService } from './services/message.service';
 import { MessageController } from './controllers/message.controller';
 import { MessageGateway } from './message.gateway';
+import { AuthModule } from '../../auth/auth.module';
+
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forFeature([{ name: Message.name, schema: MessageSchema }]),
   ],
   providers: [MessageService, MessageGateway],

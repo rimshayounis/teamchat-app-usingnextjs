@@ -23,19 +23,26 @@ let MessageService = class MessageService {
         this.messageModel = messageModel;
     }
     async sendMessage(channelId, senderId, content) {
+        if (!mongoose_2.Types.ObjectId.isValid(channelId) || !mongoose_2.Types.ObjectId.isValid(senderId)) {
+            throw new Error('Invalid ObjectId format');
+        }
         const message = new this.messageModel({
             content,
-            sender: senderId,
-            channel: channelId,
+            sender: new mongoose_2.Types.ObjectId(senderId),
+            channel: new mongoose_2.Types.ObjectId(channelId),
         });
         return await message.save();
     }
     async getMessages(channelId) {
+        if (!mongoose_2.Types.ObjectId.isValid(channelId)) {
+            throw new common_1.NotFoundException('Invalid channel ID format');
+        }
         return this.messageModel
-            .find({ channel: channelId })
-            .populate('sender', 'username')
-            .populate('channel', 'name')
-            .sort({ createdAt: 1 });
+            .find({ channel: new mongoose_2.Types.ObjectId(channelId) })
+            .populate('sender', 'username email')
+            .populate('channel', 'name description')
+            .sort({ createdAt: 1 })
+            .exec();
     }
 };
 exports.MessageService = MessageService;

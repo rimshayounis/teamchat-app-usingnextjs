@@ -1,16 +1,22 @@
+import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-export declare class MessageGateway {
+import { MessageService } from './services/message.service';
+export declare class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    private readonly messageService;
     server: Server;
+    private logger;
+    constructor(messageService: MessageService);
+    handleConnection(client: Socket): void;
+    handleDisconnect(client: Socket): void;
     handleJoin(data: {
         channel: string;
     }, client: Socket): void;
+    handleLeave(data: {
+        channel: string;
+    }, client: Socket): void;
     handleMessage(data: {
-        channel: string;
-        user: string;
-        message: string;
-    }): void;
-    handleTyping(data: {
-        channel: string;
-        user: string;
-    }): void;
+        channelId: string;
+        senderId: string;
+        content: string;
+    }, client: Socket): Promise<void>;
 }

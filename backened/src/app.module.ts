@@ -7,7 +7,7 @@ import { TeamModule } from './models/teams/team.module';
 import { TeamMemberModule } from './models/team-members/team-member.module';
 import { ChannelModule } from './models/channels/channel.module';
 import { MessageModule } from './models/messages/message.module';
-import { AuthMiddleware } from './auth/auth.middleware';
+ import { AuthMiddleware } from './auth/auth.middleware';
 import { MessageGateway } from './models/messages/message.gateway';
 
 import { AuthModule } from './auth/auth.module'; 
@@ -21,9 +21,9 @@ import { AuthModule } from './auth/auth.module';
     TeamMemberModule,
     ChannelModule,
     MessageModule,
-    AuthModule, // ✅ Add to imports
+    AuthModule,
   ],
-  providers: [MessageGateway], // ✅ Only Gateway, not AuthService here
+  providers: [MessageGateway],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
@@ -35,4 +35,5 @@ export class AppModule {
         { path: 'messages/*', method: RequestMethod.ALL },
       );
   }
+      
 }

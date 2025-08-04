@@ -19,7 +19,17 @@ export declare class AuthController {
     login(body: {
         email: string;
         password: string;
-    }, res: Response): Promise<Response<any, Record<string, any>>>;
-    refresh(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    }, res: Response): Promise<{
+        access_token: string;
+        user: {
+            _id: unknown;
+            email: string;
+            username: string;
+        };
+        message: string;
+    }>;
+    refresh(req: Request): Promise<{
+        access_token: string;
+    }>;
     getCsrfToken(req: Request, res: Response): Response<any, Record<string, any>>;
 }

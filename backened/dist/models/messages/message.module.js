@@ -13,12 +13,14 @@ const message_schema_1 = require("./entities/message.schema");
 const message_service_1 = require("./services/message.service");
 const message_controller_1 = require("./controllers/message.controller");
 const message_gateway_1 = require("./message.gateway");
+const auth_module_1 = require("../../auth/auth.module");
 let MessageModule = class MessageModule {
 };
 exports.MessageModule = MessageModule;
 exports.MessageModule = MessageModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forFeature([{ name: message_schema_1.Message.name, schema: message_schema_1.MessageSchema }]),
         ],
         providers: [message_service_1.MessageService, message_gateway_1.MessageGateway],

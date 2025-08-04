@@ -1,8 +1,10 @@
 
 
-import { Body, Controller, Get, Param, Post, Query} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards} from '@nestjs/common';
 import { TeamMemberService } from '../services/team-member.service';
+ import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('team-members')
 export class TeamMemberController {
   constructor(private readonly teamMemberService: TeamMemberService) {}

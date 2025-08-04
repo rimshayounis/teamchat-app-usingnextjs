@@ -8,12 +8,13 @@ import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../models/users/entities/user.schema';
 import { Model } from 'mongoose';
-
+import { ConfigService } from '@nestjs/config'; 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDocument> {
@@ -30,12 +31,12 @@ export class AuthService {
     const payload = { userId: user._id, email: user.email };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '15m',
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: '1h',
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'), 
       expiresIn: '7d',
     });
 
@@ -48,13 +49,13 @@ export class AuthService {
   async refreshAccessToken(refreshToken: string): Promise<string> {
     try {
       const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'), 
       });
 
       const newAccessToken = this.jwtService.sign(
         { userId: payload.userId, email: payload.email },
         {
-          secret: process.env.JWT_ACCESS_SECRET,
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'), 
           expiresIn: '15m',
         },
       );

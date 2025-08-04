@@ -15,35 +15,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageController = void 0;
 const common_1 = require("@nestjs/common");
 const message_service_1 = require("../services/message.service");
+const jwt_auth_guard_1 = require("../../../auth/jwt-auth.guard");
+const csrf_guard_1 = require("../../../auth/csrf.guard");
 let MessageController = class MessageController {
-    service;
-    constructor(service) {
-        this.service = service;
+    messageService;
+    constructor(messageService) {
+        this.messageService = messageService;
     }
-    send(dto) {
-        return this.service.sendMessage(dto.channelId, dto.senderId, dto.content);
+    async getMessages(channelId) {
+        return this.messageService.getMessages(channelId);
     }
-    getChannelMessages(channelId) {
-        return this.service.getMessages(channelId);
+    async sendMessage(body, req) {
+        const userId = req.user.userId;
+        return this.messageService.sendMessage(body.channelId, userId, body.content);
     }
 };
 exports.MessageController = MessageController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], MessageController.prototype, "send", null);
-__decorate([
-    (0, common_1.Get)(':channelId'),
+    (0, common_1.Get)('channels/:channelId'),
     __param(0, (0, common_1.Param)('channelId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], MessageController.prototype, "getChannelMessages", null);
+    __metadata("design:returntype", Promise)
+], MessageController.prototype, "getMessages", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseGuards)(csrf_guard_1.CsrfGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], MessageController.prototype, "sendMessage", null);
 exports.MessageController = MessageController = __decorate([
     (0, common_1.Controller)('messages'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [message_service_1.MessageService])
 ], MessageController);
 //# sourceMappingURL=message.controller.js.map

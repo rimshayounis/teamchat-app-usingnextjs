@@ -23,11 +23,11 @@ __decorate([
     __metadata("design:type", String)
 ], Message.prototype, "content", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User' }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: true }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Message.prototype, "sender", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'Channel' }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'Channel', required: true }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Message.prototype, "channel", void 0);
 exports.Message = Message = __decorate([

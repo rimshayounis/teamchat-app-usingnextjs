@@ -1,4 +1,5 @@
 import { TeamService } from '../services/team.service';
+import { Request } from 'express';
 export declare class TeamController {
     private readonly teamService;
     constructor(teamService: TeamService);
@@ -6,7 +7,7 @@ export declare class TeamController {
         name: string;
         userId: string;
     }): Promise<import("../entities/team.schema").Team>;
-    getAllTeams(): Promise<import("../entities/team.schema").Team[]>;
+    getAllTeams(req: Request): Promise<import("../entities/team.schema").Team[]>;
     deleteTeam(teamId: string, body: {
         userId: string;
     }): Promise<{

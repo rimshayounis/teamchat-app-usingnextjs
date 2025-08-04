@@ -1,7 +1,6 @@
-import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-export declare class CsrfMiddleware implements NestMiddleware {
-    private readonly csrfProtection;
+export declare class CsrfMiddleware {
+    private csrfProtection;
     constructor();
     use(req: Request, res: Response, next: NextFunction): void;
 }

@@ -17,6 +17,7 @@ const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./jwt.strategy");
 const user_schema_1 = require("../models/users/entities/user.schema");
 const user_module_1 = require("../models/users/user.module");
+const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -29,16 +30,16 @@ exports.AuthModule = AuthModule = __decorate([
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
-                    secret: configService.get('JWT_SECRET'),
-                    signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') || '1d' },
+                    secret: configService.get('JWT_ACCESS_SECRET'),
+                    signOptions: { expiresIn: '15m' },
                 }),
                 inject: [config_1.ConfigService],
             }),
             user_module_1.UserModule,
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
-        exports: [auth_service_1.AuthService],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, jwt_auth_guard_1.JwtAuthGuard],
+        exports: [auth_service_1.AuthService, jwt_1.JwtModule, passport_1.PassportModule, jwt_strategy_1.JwtStrategy, jwt_auth_guard_1.JwtAuthGuard],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

@@ -1,3 +1,4 @@
+
 import {
   Controller,
   Post,
@@ -29,51 +30,43 @@ export class AuthController {
     const user = await this.authService.validateUser(body.email, body.password);
     const tokens = await this.authService.login(user);
 
-    console.log("user:", user);
-    console.log("tokens:", tokens);
-
     res.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
-      secure: true,
+      secure: false, // set to true in production (HTTPS)
       sameSite: 'strict',
       path: '/auth/refresh',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return res.json({
-  access_token: tokens.access_token,
-  user: {
-    _id: user._id,
-    email: user.email,
-    username: user.username,
-  },
-  message: 'Logged in successfully',
-});
 
-
-   
+    return {
+      access_token: tokens.access_token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+      message: 'Logged in successfully',
+    };
   }
 
   @Post('refresh')
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refresh(@Req() req: Request) {
     const refreshToken = req.cookies['refresh_token'];
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token provided');
     }
 
-    try {
-      const accessToken = await this.authService.refreshAccessToken(refreshToken);
-      return res.json({ access_token: accessToken });
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
+    const accessToken = await this.authService.refreshAccessToken(refreshToken);
+    return { access_token: accessToken };
   }
 
-  @Get('csrf-token')
-  getCsrfToken(@Req() req: Request, @Res() res: Response) {
-    const csrfToken = res.locals.csrfToken;
-    return res.json({ csrfToken });
-  }
+
+
+
+@Get('csrf-token')
+getCsrfToken(@Req() req: Request, @Res() res: Response) {
+  return res.json({ csrfToken: res.locals.csrfToken });
 }
 
 
-
+}

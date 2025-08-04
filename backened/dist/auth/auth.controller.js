@@ -26,16 +26,14 @@ let AuthController = class AuthController {
     async login(body, res) {
         const user = await this.authService.validateUser(body.email, body.password);
         const tokens = await this.authService.login(user);
-        console.log("user:", user);
-        console.log("tokens:", tokens);
         res.cookie('refresh_token', tokens.refresh_token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             sameSite: 'strict',
             path: '/auth/refresh',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        return res.json({
+        return {
             access_token: tokens.access_token,
             user: {
                 _id: user._id,
@@ -43,24 +41,18 @@ let AuthController = class AuthController {
                 username: user.username,
             },
             message: 'Logged in successfully',
-        });
+        };
     }
-    async refresh(req, res) {
+    async refresh(req) {
         const refreshToken = req.cookies['refresh_token'];
         if (!refreshToken) {
             throw new common_1.UnauthorizedException('No refresh token provided');
         }
-        try {
-            const accessToken = await this.authService.refreshAccessToken(refreshToken);
-            return res.json({ access_token: accessToken });
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('Invalid refresh token');
-        }
+        const accessToken = await this.authService.refreshAccessToken(refreshToken);
+        return { access_token: accessToken };
     }
     getCsrfToken(req, res) {
-        const csrfToken = res.locals.csrfToken;
-        return res.json({ csrfToken });
+        return res.json({ csrfToken: res.locals.csrfToken });
     }
 };
 exports.AuthController = AuthController;
@@ -82,9 +74,8 @@ __decorate([
 __decorate([
     (0, common_1.Post)('refresh'),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refresh", null);
 __decorate([

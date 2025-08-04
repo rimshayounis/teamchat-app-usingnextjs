@@ -15,41 +15,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChannelController = void 0;
 const common_1 = require("@nestjs/common");
 const channel_service_1 = require("../services/channel.service");
+const jwt_auth_guard_1 = require("../../../auth/jwt-auth.guard");
 let ChannelController = class ChannelController {
     service;
     constructor(service) {
         this.service = service;
     }
-    async create(dto) {
+    async create(dto, req) {
+        console.log('Creating channel by user:', req.user);
         return this.service.create(dto.name, dto.teamId);
     }
-    async getChannels(teamId) {
+    async getChannels(teamId, req) {
+        console.log('Fetching channels — user:', req.user);
         return this.service.findByTeam(teamId);
     }
-    async delete(channelId) {
+    async delete(channelId, req) {
+        console.log('Deleting channel by user:', req.user);
         return this.service.deleteChannel(channelId);
     }
 };
 exports.ChannelController = ChannelController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('teams/:teamId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('teamId')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelController.prototype, "getChannels", null);
 __decorate([
     (0, common_1.Delete)(':channelId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('channelId')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelController.prototype, "delete", null);
 exports.ChannelController = ChannelController = __decorate([
