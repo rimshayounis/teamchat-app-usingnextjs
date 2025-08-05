@@ -30,23 +30,30 @@ let MessageGateway = class MessageGateway {
     handleDisconnect(client) {
         this.logger.log(`Client disconnected: ${client.id}`);
     }
-    handleJoin(data, client) {
-        if (!data.channel) {
-            client.emit('error', { message: 'Channel is required' });
-            return;
-        }
-        client.join(data.channel);
-        client.emit('joinedRoom', { channel: data.channel });
-        this.logger.log(`Client ${client.id} joined room ${data.channel}`);
+    handleJoinChannel(data, client) {
+        client.join(data.channelId);
+        client.emit('joinedChannel', data.channelId);
+        this.logger.log(`Client ${client.id} joined channel ${data.channelId}`);
     }
-    handleLeave(data, client) {
-        if (!data.channel) {
-            client.emit('error', { message: 'Channel is required' });
+    handleLeaveChannel(data, client) {
+        client.leave(data.channelId);
+        this.logger.log(`Client ${client.id} left channel ${data.channelId}`);
+    }
+    handleTyping(data, client) {
+        if (!data.channelId || !data.username) {
+            client.emit('error', { message: 'Channel ID and Username are required' });
             return;
         }
-        client.leave(data.channel);
-        client.emit('leftRoom', { channel: data.channel });
-        this.logger.log(`Client ${client.id} left room ${data.channel}`);
+        client.to(data.channelId).emit('userTyping', { username: data.username });
+        this.logger.log(`User ${data.username} is typing in channel ${data.channelId}`);
+    }
+    handleStopTyping(data, client) {
+        if (!data.channelId || !data.username) {
+            client.emit('error', { message: 'Channel ID and Username are required' });
+            return;
+        }
+        client.to(data.channelId).emit('userStoppedTyping', { username: data.username });
+        this.logger.log(`User ${data.username} stopped typing in channel ${data.channelId}`);
     }
     async handleMessage(data, client) {
         try {
@@ -57,7 +64,7 @@ let MessageGateway = class MessageGateway {
             const savedMessage = await this.messageService.sendMessage(data.channelId, data.senderId, data.content);
             const populatedMessage = await savedMessage.populate([
                 { path: 'sender', select: 'username email' },
-                { path: 'channel', select: 'name description' }
+                { path: 'channel', select: 'name description' },
             ]);
             this.server.to(data.channelId).emit('receiveMessage', {
                 id: populatedMessage._id,
@@ -65,7 +72,7 @@ let MessageGateway = class MessageGateway {
                 sender: populatedMessage.sender,
                 channel: populatedMessage.channel,
                 createdAt: populatedMessage[`createdAt`],
-                updatedAt: populatedMessage[`updatedAt`]
+                updatedAt: populatedMessage[`updatedAt`],
             });
         }
         catch (error) {
@@ -80,21 +87,37 @@ __decorate([
     __metadata("design:type", socket_io_1.Server)
 ], MessageGateway.prototype, "server", void 0);
 __decorate([
-    (0, websockets_1.SubscribeMessage)('channel'),
+    (0, websockets_1.SubscribeMessage)('joinChannel'),
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", void 0)
-], MessageGateway.prototype, "handleJoin", null);
+], MessageGateway.prototype, "handleJoinChannel", null);
 __decorate([
-    (0, websockets_1.SubscribeMessage)('leaveRoom'),
+    (0, websockets_1.SubscribeMessage)('leaveChannel'),
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
     __metadata("design:returntype", void 0)
-], MessageGateway.prototype, "handleLeave", null);
+], MessageGateway.prototype, "handleLeaveChannel", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('typing'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
+    __metadata("design:returntype", void 0)
+], MessageGateway.prototype, "handleTyping", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('stopTyping'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, socket_io_1.Socket]),
+    __metadata("design:returntype", void 0)
+], MessageGateway.prototype, "handleStopTyping", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('sendMessage'),
     __param(0, (0, websockets_1.MessageBody)()),
@@ -107,9 +130,9 @@ exports.MessageGateway = MessageGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
             origin: process.env.FRONTEND_URL,
-            credentials: true
+            credentials: true,
         },
-        namespace: '/channel'
+        namespace: '/channel',
     }),
     __metadata("design:paramtypes", [message_service_1.MessageService])
 ], MessageGateway);

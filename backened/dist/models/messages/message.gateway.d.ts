@@ -8,11 +8,19 @@ export declare class MessageGateway implements OnGatewayConnection, OnGatewayDis
     constructor(messageService: MessageService);
     handleConnection(client: Socket): void;
     handleDisconnect(client: Socket): void;
-    handleJoin(data: {
-        channel: string;
+    handleJoinChannel(data: {
+        channelId: string;
     }, client: Socket): void;
-    handleLeave(data: {
-        channel: string;
+    handleLeaveChannel(data: {
+        channelId: string;
+    }, client: Socket): void;
+    handleTyping(data: {
+        channelId: string;
+        username: string;
+    }, client: Socket): void;
+    handleStopTyping(data: {
+        channelId: string;
+        username: string;
     }, client: Socket): void;
     handleMessage(data: {
         channelId: string;

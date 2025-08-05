@@ -11,14 +11,12 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { MessageService } from './services/message.service';
 
-@WebSocketGateway({ 
-
+@WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL,
-
-    credentials: true
+    credentials: true,
   },
-  namespace: '/channel'
+  namespace: '/channel',
 })
 export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -36,34 +34,54 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('channel')
-  handleJoin(
-    @MessageBody() data: { channel: string },
+
+  @SubscribeMessage('joinChannel')
+  handleJoinChannel(
+    @MessageBody() data: { channelId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    if (!data.channel) {
-      client.emit('error', { message: 'Channel is required' });
-      return;
-    }
-
-    client.join(data.channel);
-    client.emit('joinedRoom', { channel: data.channel });
-    this.logger.log(`Client ${client.id} joined room ${data.channel}`);
+    client.join(data.channelId);
+    client.emit('joinedChannel', data.channelId);
+    this.logger.log(`Client ${client.id} joined channel ${data.channelId}`);
   }
 
-  @SubscribeMessage('leaveRoom')
-  handleLeave(
-    @MessageBody() data: { channel: string },
+  
+  @SubscribeMessage('leaveChannel')
+  handleLeaveChannel(
+    @MessageBody() data: { channelId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    if (!data.channel) {
-      client.emit('error', { message: 'Channel is required' });
+    client.leave(data.channelId);
+    this.logger.log(`Client ${client.id} left channel ${data.channelId}`);
+  }
+
+  @SubscribeMessage('typing')
+  handleTyping(
+    @MessageBody() data: { channelId: string; username: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    if (!data.channelId || !data.username) {
+      client.emit('error', { message: 'Channel ID and Username are required' });
       return;
     }
 
-    client.leave(data.channel);
-    client.emit('leftRoom', { channel: data.channel });
-    this.logger.log(`Client ${client.id} left room ${data.channel}`);
+    client.to(data.channelId).emit('userTyping', { username: data.username });
+    this.logger.log(`User ${data.username} is typing in channel ${data.channelId}`);
+  }
+
+
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(
+    @MessageBody() data: { channelId: string; username: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    if (!data.channelId || !data.username) {
+      client.emit('error', { message: 'Channel ID and Username are required' });
+      return;
+    }
+
+    client.to(data.channelId).emit('userStoppedTyping', { username: data.username });
+    this.logger.log(`User ${data.username} stopped typing in channel ${data.channelId}`);
   }
 
   @SubscribeMessage('sendMessage')
@@ -80,14 +98,13 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
       const savedMessage = await this.messageService.sendMessage(
         data.channelId,
         data.senderId,
-        data.content
+        data.content,
       );
 
       const populatedMessage = await savedMessage.populate([
         { path: 'sender', select: 'username email' },
-        { path: 'channel', select: 'name description' }
+        { path: 'channel', select: 'name description' },
       ]);
-
 
       this.server.to(data.channelId).emit('receiveMessage', {
         id: populatedMessage._id,
@@ -95,14 +112,11 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
         sender: populatedMessage.sender,
         channel: populatedMessage.channel,
         createdAt: populatedMessage[`createdAt`],
-        updatedAt: populatedMessage[`updatedAt`]
+        updatedAt: populatedMessage[`updatedAt`],
       });
-
     } catch (error) {
       this.logger.error(`Error sending message: ${error.message}`);
       client.emit('error', { message: 'Failed to send message' });
     }
   }
-
-  
 }
