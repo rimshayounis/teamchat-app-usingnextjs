@@ -13,7 +13,7 @@ import { MessageService } from './services/message.service';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
   namespace: '/channel',
@@ -25,7 +25,7 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
   private logger = new Logger('MessageGateway');
 
   constructor(private readonly messageService: MessageService) {}
-
+@SubscribeMessage('connect')
   handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }

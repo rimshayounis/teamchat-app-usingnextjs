@@ -87,6 +87,12 @@ __decorate([
     __metadata("design:type", socket_io_1.Server)
 ], MessageGateway.prototype, "server", void 0);
 __decorate([
+    (0, websockets_1.SubscribeMessage)('connect'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket]),
+    __metadata("design:returntype", void 0)
+], MessageGateway.prototype, "handleConnection", null);
+__decorate([
     (0, websockets_1.SubscribeMessage)('joinChannel'),
     __param(0, (0, websockets_1.MessageBody)()),
     __param(1, (0, websockets_1.ConnectedSocket)()),
@@ -129,7 +135,7 @@ __decorate([
 exports.MessageGateway = MessageGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
-            origin: process.env.FRONTEND_URL,
+            origin: process.env.CLIENT_URL,
             credentials: true,
         },
         namespace: '/channel',
