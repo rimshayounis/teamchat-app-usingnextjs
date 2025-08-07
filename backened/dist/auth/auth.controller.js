@@ -28,9 +28,9 @@ let AuthController = class AuthController {
         const tokens = await this.authService.login(user);
         res.cookie('refresh_token', tokens.refresh_token, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: 'strict',
-            path: '/auth/refresh',
+            path: '/auth/login',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         return {
@@ -42,14 +42,6 @@ let AuthController = class AuthController {
             },
             message: 'Logged in successfully',
         };
-    }
-    async refresh(req) {
-        const refreshToken = req.cookies['refresh_token'];
-        if (!refreshToken) {
-            throw new common_1.UnauthorizedException('No refresh token provided');
-        }
-        const accessToken = await this.authService.refreshAccessToken(refreshToken);
-        return { access_token: accessToken };
     }
     getCsrfToken(req, res) {
         return res.json({ csrfToken: res.locals.csrfToken });
@@ -71,13 +63,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
-__decorate([
-    (0, common_1.Post)('refresh'),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "refresh", null);
 __decorate([
     (0, common_1.Get)('csrf-token'),
     __param(0, (0, common_1.Req)()),

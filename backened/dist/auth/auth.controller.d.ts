@@ -28,8 +28,5 @@ export declare class AuthController {
         };
         message: string;
     }>;
-    refresh(req: Request): Promise<{
-        access_token: string;
-    }>;
     getCsrfToken(req: Request, res: Response): Response<any, Record<string, any>>;
 }

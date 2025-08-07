@@ -32,12 +32,20 @@ export class AuthController {
 
     res.cookie('refresh_token', tokens.refresh_token, {
       httpOnly: true,
-      secure: false, // set to true in production (HTTPS)
+      secure: true, 
       sameSite: 'strict',
-      path: '/auth/refresh',
+      path: '/auth/login',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+   /* res.cookie('access_token', tokens.access_token, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: 'strict',
+      path: '/auth/login',
+      maxAge:  24 * 60 * 60 * 1000,
+    });
+*/
     return {
       access_token: tokens.access_token,
       user: {
@@ -49,18 +57,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
-  async refresh(@Req() req: Request) {
-    const refreshToken = req.cookies['refresh_token'];
-    if (!refreshToken) {
-      throw new UnauthorizedException('No refresh token provided');
-    }
-
-    const accessToken = await this.authService.refreshAccessToken(refreshToken);
-    return { access_token: accessToken };
-  }
-
-
+ 
 
 
 @Get('csrf-token')
@@ -70,3 +67,9 @@ getCsrfToken(@Req() req: Request, @Res() res: Response) {
 
 
 }
+
+
+
+
+
+

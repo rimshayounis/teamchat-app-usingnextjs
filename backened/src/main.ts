@@ -1,14 +1,6 @@
 
 
 
-
-
-
-
-
-
-
-
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
@@ -21,13 +13,13 @@ async function bootstrap() {
 
 
   app.enableCors({
-  origin: 'http://localhost:3001', // frontend origin
+  origin: 'http://localhost:3001',
   credentials: true,
-  exposedHeaders: ['x-csrf-token'], // ✅ expose CSRF token if sent via header
+  exposedHeaders: ['x-csrf-token'], 
 });
 
 
-  app.use(cookieParser()); // ✅ MUST come before csrf
+  app.use(cookieParser()); 
   const csrf = new CsrfMiddleware();
   app.use(csrf.use.bind(csrf));
 

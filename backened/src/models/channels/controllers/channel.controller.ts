@@ -27,7 +27,7 @@ export class ChannelController {
   constructor(private readonly service: ChannelService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard) // ✅ Ensure token is checked here
+  @UseGuards(JwtAuthGuard) 
   async create(
     @Body() dto: { name: string; teamId: string },
     @Req() req: AuthenticatedRequest,
@@ -37,17 +37,17 @@ export class ChannelController {
   }
 
   @Get('teams/:teamId')
-  @UseGuards(JwtAuthGuard) // ✅ Ensure protected route gets user info
+  @UseGuards(JwtAuthGuard) 
   async getChannels(
     @Param('teamId') teamId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    console.log('Fetching channels — user:', req.user); // ✅ Will now show
+    console.log('Fetching channels — user:', req.user); 
     return this.service.findByTeam(teamId);
   }
 
   @Delete(':channelId')
-  @UseGuards(JwtAuthGuard) // ✅ Must be protected
+  @UseGuards(JwtAuthGuard) 
   async delete(
     @Param('channelId') channelId: string,
     @Req() req: AuthenticatedRequest,
